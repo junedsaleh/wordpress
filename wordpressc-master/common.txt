@@ -1,0 +1,74 @@
+// stylesheet url
+<link rel="apple-touch-icon" href="<?php bloginfo('stylesheet_directory')?>/images/apple-touch-icon.png">
+
+// directory uri
+<script type="text/javascript" src="<?php echo get_template_directory_uri(); ?>/js/cufon-yui.js"></script>
+
+// for menu
+<?php
+	wp_nav_menu(array('theme_location'=>'top-menu','container'=>'div','conatiner_class'=>'collapse navbar-collapse','cotainer_id'=>'navbarCollapse','menu_class'=>'navbar-nav mr-auto'));
+?>
+
+// Display all post
+<?php $args = array(
+'post_type'=> 'post',
+'orderby'    => 'ID',
+'post_status' => 'publish',
+'order'    => 'DESC',
+'posts_per_page' => -1 // this will retrive all the post that is published 
+);
+$result = new WP_Query( $args );
+if ( $result-> have_posts() ) : ?>
+<?php while ( $result->have_posts() ) : $result->the_post(); ?>
+<h1><?php the_title(); ?></h1><br>
+<?php the_author();?> | <?php the_date();?> | <?php echo get_comments_number()." Comments"; ?> | <?php the_category();?>
+		  <a href="<?php echo get_post_permalink();?>">read more...</a>
+<?php endwhile; ?>
+<?php endif; wp_reset_postdata(); ?>
+
+// all category
+<?php $categories = get_categories();
+foreach($categories as $category) {
+   echo '<div class="col-md-4"><a href="' . get_category_link($category->term_id) . '">' . $category->name . '</a></div>';
+} ?>
+
+// single post
+<?php while ( have_posts() ) : the_post(); ?>
+<h3><?php the_category('&nbsp;&rsaquo;&nbsp;'); echo "&nbsp;&rsaquo;&nbsp;"; the_title(); ?></h3>
+<?php the_content(); ?><br>
+<?php echo get_comments_number()." Comments"; ?><br>
+	<?php foreach (get_comments(array('post_id' => $post->ID)) as $comment): ?>
+	<div><?php echo $comment->comment_author; ?> said: "<?php echo $comment->comment_content; ?>".</div>
+	<?php endforeach; ?>
+<?php next_post_link()?> | <?php previous_post_link(); ?>
+<?php endwhile; // end of the loop. ?>
+
+// plugin index.php
+<?php
+   /*
+   Plugin Name: Badiland
+   description: blabla
+   Version: 1.2
+   Author: Mr. Amir
+   License: GPL2
+   */
+?>
+<?php 
+
+function cate() {
+	$categories = get_categories();
+	$s = '';
+	foreach($categories as $category) {
+   		$s=$s.'<a href="' . get_category_link($category->term_id) . '">' . $category->name . '</a>';
+	}
+ return $s;
+}
+
+add_action("init", "cate");
+add_shortcode("t", "cate");
+
+?>
+
+// display shortcode
+<?php echo do_shortcode('[t]'); ?>
+

@@ -1,0 +1,2 @@
+# wordpressc
+# lochori kari lo
